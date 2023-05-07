@@ -1,0 +1,75 @@
+import mysql.connector
+
+# Establishing a connection to the database
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="Keerthi@1234",
+  database="Inventory_Management"
+)
+
+# Creating a cursor object to execute queries
+mycursor = mydb.cursor()
+
+# Inserting entries into the manufacture table
+sql = "INSERT INTO manufacture (manufacture_id, items_required, defective_items) VALUES (%s, %s, %s)"
+val = [
+  ('1', '100', '5'),
+  ('2', '50', '2'),
+  ('3', '200', '10'),
+]
+mycursor.executemany(sql, val)
+mydb.commit()
+
+# Inserting entries into the goods table
+sql = "INSERT INTO goods (goods_id, manufactured_date, item_name) VALUES (%s, %s, %s)"
+val = [
+  ('1', '2023-04-01', 'Shirt'),
+  ('2', '2023-04-02', 'Toy'),
+  ('3', '2023-04-05', 'Wooden Chair'),
+]
+mycursor.executemany(sql, val)
+mydb.commit()
+
+# Inserting entries into the purchase table
+sql = "INSERT INTO purchase (purchase_id, purchase_amount, store_name) VALUES (%s, %s, %s)"
+val = [
+  ('1', '1000', 'Online Store'),
+  ('2', '500', 'Offline Store'),
+  ('3', '1200', 'MyKids Store'),
+]
+mycursor.executemany(sql, val)
+mydb.commit()
+
+# Inserting entries into the sale table
+sql = "INSERT INTO sale (sale_id, sale_date, profit_margin, store_name) VALUES (%s, %s, %s, %s)"
+val = [
+  ('1', '2023-05-01', '200', 'MyCare Store'),
+  ('2', '2023-05-02', '150', 'ORay Store'),
+  ('3', '2023-05-03', '300', 'Online Store'),
+]
+mycursor.executemany(sql, val)
+mydb.commit()
+
+# Deleting defective items from the goods table
+sql = "DELETE FROM goods WHERE item_name = 'Shirt' AND manufactured_date = '2023-04-01' AND store_name = 'ORay Store'"
+mycursor.execute(sql)
+mydb.commit()
+
+# Updating manufacture details of red-colored toys purchased by MyKids Store
+sql = "UPDATE manufacture SET items_required = '60' WHERE item_name = 'Toy' AND color = 'Red' AND store_name = 'MyKids Store'"
+mycursor.execute(sql)
+mydb.commit()
+
+# Displaying wooden chairs manufactured before 1st May 2023
+sql = "SELECT * FROM goods WHERE item_name = 'Wooden Chair' AND manufactured_date < '2023-05-01'"
+mycursor.execute(sql)
+result = mycursor.fetchall()
+for row in result:
+  print(row)
+
+# Displaying profit margin of wooden table sold by SS Export to MyCare Store
+sql = "SELECT profit_margin FROM sale WHERE item_name = 'Wooden Table' AND store_name = 'MyCare Store' AND manufacturer = 'SS Export'"
+mycursor.execute(sql)
+result = mycursor.fetchone()
+print("Profit Margin: ", result[0])
